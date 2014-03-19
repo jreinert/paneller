@@ -13,13 +13,16 @@ module Formatters
     #
     # @param [Hash] colors The colors to use for this string.
     #
-    # @option colors [Colorize::Color] :fg The foreground color.
+    # @option colors [String, Array<Integer>, Symbol] :fg The foreground color.
     #   The last used foreground color will be used per default.
+    #   Can be a hex string, an array of three rgb integer values in 0..255
+    #   or a symbol (or string) with a color name.
     #
-    # @option colors [Colorize::Color] :bg The background color.
+    # @option colors [String, Array<Integer>, Symbol] :bg The background color.
+    #   See +:fg+ for types.
     #   The last used background color will be used per default.
     #
-    # @overload colorize(colors, string)
+    # @overload colorize(string, colors)
     #
     # @param [String] string The string to colorize.
     #
@@ -27,7 +30,8 @@ module Formatters
     #
     # @yieldreturn [String] The string to colorize
 
-    def colorize(colors, string=nil, &block)
+    def colorize(string=nil, colors, &block)
+
       colors[:bg] ||= @color_stack.last[:bg]
       colors[:fg] ||= @color_stack.last[:fg]
 
@@ -43,10 +47,14 @@ module Formatters
     private
 
     def color_setting_string(colors)
-      bg = colors[:bg] ? colors[:bg].hex : ''
-      fg = colors[:fg] ? colors[:fg].hex : ''
+      bg = colors[:bg] ? Color.new(colors[:bg]).hex : ''
+      fg = colors[:fg] ? Color.new(colors[:fg]).hex : ''
 
-      "^bg(#{bg})^fg(#{fg})"
+      result = ''
+      result << "^bg(#{bg})"
+      result << "^fg(#{fg})"
+
+      result
     end
 
   end
