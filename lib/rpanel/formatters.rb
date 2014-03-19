@@ -1,3 +1,6 @@
+require 'colorable'
+include Colorable
+
 # Formatters provide helper methods used by Widgets to format strings
 
 module Formatters
@@ -5,9 +8,6 @@ module Formatters
   # Provides helper methods for formatting strings for dzen2
 
   module Dzen2
-    require 'colorable'
-
-    @color_stack = [{}]
 
     # Sets back- and foreground colors of a string.
     #
