@@ -19,8 +19,10 @@ class Paneller::Panel
   # @param [Widget] widget the widget to subscribe to
 
   def register_widget(widget)
-    @widgets[widget.id] = widget.to_s
-    widget.add_observer(self)
+    unless @widgets[widget.id]
+      widget.add_observer(self)
+      @widgets[widget.id] = widget.to_s
+    end
   end
 
   # Flushes the current content of all registered widgets to the +output+
