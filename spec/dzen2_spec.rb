@@ -62,6 +62,50 @@ module Paneller
         expect(actual).to eq expected
       end
     end
+
+    describe '#progress_bar' do
+
+      it 'accepts arguments for percentage and optionally for dimensions' do
+        expect { dzen2.progress_bar(50) }.not_to raise_error
+        expect { dzen2.progress_bar(50, width: 50, height: 10) }.not_to raise_error
+      end
+
+      # what is either :fill or :rest
+
+      def dim_regex(what)
+        /(?<#{what}_width>\d+)x(?<#{what}_height>\d+)/
+      end
+
+      let(:bar_regex) { /^\^r\(#{dim_regex(:fill)}\)\^ro\(#{dim_regex(:rest)}\)$/ }
+
+      it 'returns correct dzen2 rectangle tags' do
+        [25, 100, 500, nil].each do |width|
+          [10, nil].each do |height|
+            (0..100).each do |percent|
+              expect(dzen2.progress_bar(percent, width: width, height: height))
+                .to match bar_regex
+            end
+          end
+        end
+      end
+
+      it 'returns a rectangle with correct size' do
+        [25, 100, 500].each do |width|
+          (0..100).each do |i|
+            match = dzen2.progress_bar(i, width: width).match(bar_regex)
+            total_width = match[:fill_width].to_i + match[:rest_width].to_i
+
+            expect(total_width).to eq width
+          end
+        end
+      end
+
+      it 'raises an argument error if an invalid percentage is given' do
+        [-1, 101, nil, 'meh'].each do |percent|
+          expect { dzen2.progress_bar(percent) }.to raise_error(ArgumentError)
+        end
+      end
+    end
   end
 
 end

@@ -47,6 +47,24 @@ module Formatters
       result
     end
 
+    def progress_bar(percentage, dimensions={})
+      unless (0..100).include? percentage
+        raise ArgumentError.new("Invalid percentage #{percentage}")
+      end
+
+      width = dimensions[:width] || 50
+      height = dimensions[:height] || 10
+
+      filled = (width / 100.0) * percentage
+      rest = (width - filled)
+
+      if (filled + 0.5) == filled.round
+        rest = rest.round - 1 # ensure correct total length
+      end
+
+      "^r(#{filled.round}x#{height.round})^ro(#{rest.round}x#{height.round})"
+    end
+
     private
 
     def color_setting_string(colors)
