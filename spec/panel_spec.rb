@@ -1,6 +1,6 @@
-require 'rpanel/panel'
+require 'paneller/panel'
 
-module Rpanel
+module Paneller
   describe Panel do
 
     it 'can subscribe to Widgets' do

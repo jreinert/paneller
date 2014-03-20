@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'rpanel/version'
+require 'paneller/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rpanel"
-  spec.version       = Rpanel::VERSION
+  spec.name          = "paneller"
+  spec.version       = Paneller::VERSION
   spec.authors       = ["Joakim Reinert"]
   spec.email         = ["mail@jreinert.com"]
   spec.summary       = %q{TODO: Write a short summary. Required.}

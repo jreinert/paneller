@@ -1,11 +1,11 @@
 require 'observer'
-require 'rpanel/formatters'
+require 'paneller/formatters'
 
 # A Segment in a {Panel} used to display various information Widgets run in
 # separate threads, can be polled for their content and notify observers
 # ({Panel}s) about changed content.
 
-module Rpanel::Widget
+module Paneller::Widget
   include Observable
 
   @@id_counter = 0

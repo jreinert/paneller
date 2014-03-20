@@ -1,6 +1,6 @@
-require 'rpanel/widget'
+require 'paneller/widget'
 
-module Rpanel
+module Paneller
   describe Widget do
     let(:widget_class) { Class.new { include Widget } }
     let(:formatter_module) { Module.new {  } }

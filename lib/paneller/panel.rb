@@ -1,7 +1,7 @@
 # A Panel aggregates content from Widgets and flushes it to an IO object
 # whenever a widgets content has changed
 
-class Rpanel::Panel
+class Paneller::Panel
 
   # Initializes the Panel
   #

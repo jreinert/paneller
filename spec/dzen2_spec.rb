@@ -1,6 +1,6 @@
-require 'rpanel/formatters'
+require 'paneller/formatters'
 
-module Rpanel
+module Paneller
 
   describe Formatters::Dzen2 do
 
