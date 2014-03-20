@@ -8,6 +8,8 @@ require 'rpanel/formatters'
 module Rpanel::Widget
   include Observable
 
+  @@id_counter = 0
+
   # Options to use when omitted in {#initialize}
   #
   # @see #initialize
@@ -17,6 +19,8 @@ module Rpanel::Widget
     update_interval: 5,
     formatter: Formatters::Dzen2
   }
+
+  attr_reader :id
 
   # Initializes a new Widget
   #
@@ -30,6 +34,9 @@ module Rpanel::Widget
   #   formatter to use for helper methods
 
   def initialize(options = {})
+    @id = @@id_counter
+    @@id_counter += 1
+
     @options = DEFAULT_OPTIONS.merge(options)
     @content = @options[:initial_content]
     extend @options[:formatter]
@@ -52,7 +59,7 @@ module Rpanel::Widget
         changed
         @content = content
 
-        notify_observers(content)
+        notify_observers(id, content)
       end
       first_run = false
     end

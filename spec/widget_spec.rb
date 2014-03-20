@@ -31,6 +31,17 @@ module Rpanel
 
       end
 
+      it 'receives a unique id' do
+        used_ids = []
+
+        1000.times do
+          widget = widget_class.new
+
+          expect(used_ids).not_to include widget.id
+          used_ids << widget.id
+        end
+      end
+
     end
 
     describe '#poll_content' do
@@ -82,8 +93,8 @@ module Rpanel
         widget.run
 
         expect(observer).to have_received(:update).twice
-        expect(observer).to have_received(:update).with(some_content)
-        expect(observer).to have_received(:update).with(some_other_content)
+        expect(observer).to have_received(:update).with(widget.id, some_content)
+        expect(observer).to have_received(:update).with(widget.id, some_other_content)
       end
 
       it 'only notifies observers when the content has changed' do
