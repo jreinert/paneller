@@ -31,6 +31,7 @@ module Formatters
     # @yieldreturn [String] The string to colorize
 
     def colorize(string=nil, colors, &block)
+      @color_stack ||= [{}]
 
       colors[:bg] ||= @color_stack.last[:bg]
       colors[:fg] ||= @color_stack.last[:fg]
@@ -38,10 +39,12 @@ module Formatters
       @color_stack.push(colors)
       result = color_setting_string(colors)
 
-      result << string || yield
+      result << (string || yield)
 
       @color_stack.pop
       result << color_setting_string(@color_stack.last)
+
+      result
     end
 
     private
