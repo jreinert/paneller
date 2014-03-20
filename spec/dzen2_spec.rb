@@ -1,4 +1,6 @@
 require 'paneller/formatters'
+require 'colorable'
+include Colorable
 
 module Paneller
 
@@ -10,56 +12,85 @@ module Paneller
     describe '#colorize' do
 
       def random_color
-        "##{Random.rand(16777216).to_s(16).upcase.rjust(6, '0')}"
+        Color.new(Array.new(3) { Random.rand(256) })
       end
 
-      it 'returns correct dzen2 color tags' do
-        [:fg, :bg].each do |what|
-          fg_color = random_color
-          bg_color = random_color
+      def color_hex(what)
+        /(?<#{what}>#[A-F0-9]{6})?/
+      end
 
-          expect(dzen2.colorize('test', fg: fg_color))
-            .to eq "^bg()^fg(#{fg_color})test^bg()^fg()"
-
-          expect(dzen2.colorize('test', bg: bg_color))
-            .to eq "^bg(#{bg_color})^fg()test^bg()^fg()"
-
-          expect(dzen2.colorize('test', fg: fg_color, bg: fg_color))
-            .to eq "^bg(#{fg_color})^fg(#{fg_color})test^bg()^fg()"
+      let(:color_regex) do
+        parts = {}
+        [:start, :end].each do |where|
+          parts[where] =
+            /\^bg\(#{color_hex(:"#{where}_bg")}\)\^fg\(#{color_hex(:"#{where}_fg")}\)/
         end
+
+          /#{parts[:start]}(?<content>.*)#{parts[:end]}/
+      end
+
+      it 'returns correct dzen2 color tags for all input types' do
+        [:hex, :rgb].each do |input_type|
+          [{fg: random_color.send(input_type)},
+           {bg: random_color.send(input_type)},
+           {fg: random_color.send(input_type), bg: random_color.send(input_type)}].each do |colors|
+            expect(dzen2.colorize('test', colors)).to match(/^#{color_regex}$/)
+           end
+        end
+
+        expect(dzen2.colorize('test', fg: :red, bg: :blue)).to match(/^#{color_regex}$/)
       end
 
       it 'colorizes what a block passed to it returns' do
-        fg_color = random_color
+        fg_color = random_color.hex
 
-        expect(dzen2.colorize(fg: fg_color) { 'test' }).to eq "^bg()^fg(#{fg_color})test^bg()^fg()"
+        colorized_string = dzen2.colorize(fg: fg_color) { 'test' }
+        expect(colorized_string).to match(/^#{color_regex}$/)
+
+        match = colorized_string.match(/^#{color_regex}$/)
+
+        expect(match[:start_bg]).to be nil
+        expect(match[:start_fg]).to eq fg_color
+
+        expect(match[:end_bg]).to be nil
+        expect(match[:end_fg]).to be nil
+
+        expect(match[:content]).to eq 'test'
       end
 
       it 'supports nested colorizing' do
-        first = {bg: random_color}
-        second = {fg: random_color}
-        third = {bg: random_color, fg: random_color}
+        colors = {
+          outer: {bg: random_color.hex, fg: random_color.hex},
+          inner: {bg: random_color.hex}
+        }
 
-        expected = "^bg(#{first[:bg]})^fg()" <<
-                     "first" <<
-                     "^bg(#{first[:bg]})^fg(#{second[:fg]})" <<
-                       "second" <<
-                       "^bg(#{third[:bg]})^fg(#{third[:fg]})" <<
-                         "third" <<
-                       "^bg(#{first[:bg]})^fg(#{second[:fg]})" <<
-                     "^bg(#{first[:bg]})^fg()" <<
-                     "more for first" <<
-                   "^bg()^fg()"
-
-        actual = dzen2.colorize(first) do
-          result_first = "first" 
-          result_first << dzen2.colorize(second) do
-            "second" + dzen2.colorize("third", third)
-          end
-          result_first + "more for first"
+        result = dzen2.colorize(colors[:outer]) do
+          content_outer = "outer" 
+          content_outer << dzen2.colorize("inner", colors[:inner])
+          content_outer + "more for outer"
         end
 
-        expect(actual).to eq expected
+        expect(result).to match(/^#{color_regex}$/)
+
+        matches = {}
+        matches[:outer] = result.match(/^#{color_regex}$/)
+        expect(matches[:outer][:content]).to match(/^outer#{color_regex}more for outer$/)
+
+        matches[:inner] = matches[:outer][:content].match(color_regex)
+        expect(matches[:inner][:content]).to eq 'inner'
+
+        expected_colors = {}
+        expected_colors[:outer] = {:start => colors[:outer],
+                                   :end => {bg: nil, fg: nil}}
+        expected_colors[:inner] = {:start => colors[:outer].merge(colors[:inner]),
+                                   :end => colors[:outer]}
+
+        [:outer, :inner].each do |nesting|
+          [:start, :end].each do |where|
+            actual_colors = {bg: matches[nesting][:"#{where}_bg"], fg: matches[nesting][:"#{where}_fg"]}
+            expect(actual_colors).to eq expected_colors[nesting][where]
+          end
+        end
       end
     end
 
