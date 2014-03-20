@@ -1,6 +1,6 @@
 # Paneller
 
-TODO: Write a gem description
+A simple ruby api and dsl for setting up panels i.e. to be used with dzen2.
 
 ## Installation
 
@@ -22,7 +22,7 @@ TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/rpanel/fork )
+1. Fork it ( http://github.com/jreinert/paneller/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
