@@ -5,28 +5,27 @@ A simple ruby api and dsl for setting up panels i.e. to be used with dzen2.
 # Note
 
 Paneller is still in a very early development state and therefor not yet ready
-for "production use". You can contribute to the project (see _Contributing_
-below) or star it on github to make it more known.
+for "production use". You can contribute to the project (see [Contributing](#contributing) below) or star it on github to make it more known.
 
 ~~## Installation~~ (not yet available)
 
 ~~Add this line to your application's Gemfile:~~
 
-    ~~gem 'paneller'~~
+    gem 'paneller'
 
 ~~And then execute:~~
 
-    ~~$ bundle~~
+    $ bundle
 
 ~~Or install it yourself as:~~
 
-    ~~$ gem install paneller~~
+    $ gem install paneller
 
 ## Usage
 
 TODO: Write usage instructions here
 
-In the meantime you can check out [examples](tree/master/examples).
+In the meantime you can check out [examples](examples).
 
 ## Contributing
 
