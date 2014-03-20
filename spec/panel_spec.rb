@@ -31,5 +31,18 @@ module Rpanel
       expect(io).to have_received(:puts).with(expected_output)
     end
 
+    it 'sets and flushes its content whenever it receives an update' do
+      io = double("io", puts: nil)
+      panel = Panel.new(io)
+
+      widget = double("widget", add_observer: nil, id: 0)
+      panel.register_widget(widget)
+
+      expected_content = 'new content'
+      panel.update(widget.id, expected_content)
+
+      expect(io).to have_received(:puts).with(expected_content)
+    end
+
   end
 end

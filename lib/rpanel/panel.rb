@@ -29,4 +29,12 @@ class Rpanel::Panel
     @output.puts @widgets.values.join
   end
 
+  # Called whenever the content of any subscribed Widget changes.
+  # Sets the new widget content and flushes to +output+
+
+  def update(widget_id, new_content)
+    @widgets[widget_id] = new_content
+    flush
+  end
+
 end
